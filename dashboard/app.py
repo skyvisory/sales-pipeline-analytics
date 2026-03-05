@@ -321,7 +321,7 @@ with col_left:
     fig_funnel = go.Figure(go.Funnel(
         y=df_funnel['stage'],
         x=df_funnel['opportunities'],
-        textinfo="value+percent initial",
+        textinfo="value",
         textfont=dict(size=FONT_SIZE),
         marker=dict(color=[
             '#3498db',
