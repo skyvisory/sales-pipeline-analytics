@@ -1,5 +1,3 @@
-# sales-pipeline-analytics
-Sales pipeline and revenue analytics dashboard — SQL + DuckDB + Streamlit
 # Sales Pipeline Analytics
 **SQL + DuckDB + Streamlit — Interactive Revenue Dashboard**
 
@@ -8,14 +6,15 @@ Sales pipeline and revenue analytics dashboard — SQL + DuckDB + Streamlit
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.55-red)
 ![Plotly](https://img.shields.io/badge/Plotly-6.6-blue)
 
-🔗 **[Live Dashboard](YOUR_URL_HERE)**
+🔗 **[Live Dashboard](https://sales-pipeline-analytics-ukcnzhjsdzenfm8pb7vtt6.streamlit.app/)**
 
 ---
 
 ## The Business Problem
 
 Sales teams fly blind without clear pipeline visibility.
-This project builds an end-to-end analytics system answering the questions every revenue leader asks weekly:
+This project builds an end-to-end analytics system answering
+the questions every revenue leader asks weekly:
 
 - Do we have enough pipeline to hit quota?
 - Who is performing and who needs coaching?
@@ -24,18 +23,10 @@ This project builds an end-to-end analytics system answering the questions every
 
 ---
 
-## What's Built
-
-A synthetic CRM dataset of 2,000 opportunities across 8 reps, 4 regions, and 2 years — analysed with 10 SQL queries and visualised in a live interactive Streamlit dashboard.
-
----
-
 ## Dashboard
 
-![Dashboard](outputs/dashboard_screenshot.png)
-
 **Five panels:**
-- KPI cards — revenue, pipeline, win rate, sales cycle
+- KPI cards — total revenue, active pipeline, win rate, sales cycle
 - Pipeline funnel — stage conversion rates
 - Quarterly revenue — closed revenue by quarter
 - Rep leaderboard — quota attainment with traffic light colours
@@ -49,7 +40,7 @@ A synthetic CRM dataset of 2,000 opportunities across 8 reps, 4 regions, and 2 y
 |---|---|
 | Win rate by segment | SMB 47% vs Enterprise 33% — smaller deals close easier |
 | Sales cycle | 83-85 days consistent across all segments |
-| Stage velocity | Deals stall longest in Negotiation (85 days avg) |
+| Stage velocity | Deals stall longest in Negotiation at 85 days avg |
 | Best lead source | Outbound 45.3% win rate — highest of all sources |
 | Coverage | All reps pipeline constrained — active pipeline below required coverage |
 | Top rep | David Kim 122.8% quota attainment |
@@ -67,7 +58,7 @@ Win Rate Score  (35%) = close rate × 35
 Velocity Score  (25%) = 90 days / avg cycle days
 
 Required coverage = 1 / close_rate
-→ personalised per rep, not a blanket 3x rule
+→ personalised per rep not a blanket 3x rule
 ```
 
 | Score | Status |
@@ -88,19 +79,48 @@ Required coverage = 1 / close_rate
 - **Quarterly revenue must use close date not created date**
   Created date measures pipeline activity.
   Close date measures revenue recognition.
-  These are fundamentally different metrics — conflating them misleads quarterly forecasts.
+  Conflating them misleads quarterly forecasts.
 
 - **Outbound outperformed Referral on win rate (45% vs 39%)**
-  Counterintuitive — referrals are assumed to be warmer leads.
-  Suggests outbound targeting quality may be higher than assumed, or referral deals face more internal competition.
+  Counterintuitive — referrals are assumed warmer leads.
+  Suggests outbound targeting quality is higher than assumed,
+  or referral deals face more internal scrutiny.
 
 - **Negotiation is the longest active stage at 85 days**
-  Deals that reach Negotiation but don't close are burning sales capacity. A 30-day Negotiation SLA with mandatory
-  manager review would force earlier disqualification.
+  Deals stalling in Negotiation burn sales capacity.
+  A 30-day SLA with mandatory manager review would
+  force earlier disqualification decisions.
 
 - **Pipeline health is multidimensional**
   Coverage alone misses win rate and velocity signals.
-  A rep with 3x coverage but 20% win rate is in worse shape than one with 2x coverage and 45% win rate.
+  A rep with 3x coverage but 20% win rate is in worse shape
+  than one with 2x coverage and 45% win rate.
+
+## Known Limitations
+
+- **Pipeline funnel does not reflect sequential conversion**
+  The synthetic data generator assigns final stages directly
+  rather than simulating deals flowing through each stage.
+  In a real CRM dataset the funnel would show decreasing
+  volume from Qualified → Proposal → Negotiation → Closed Won.
+  Here Closed Won (593) appears larger than Qualified (58)
+  because most deals were assigned directly to closed stages.
+
+- **Q4 2024 revenue spike is a data artifact**
+  Deal close dates cluster at the dataset end date (Dec 2024)
+  producing an artificially high Q4 2024 figure.
+  In production this would be smoothed by continuous data flow.
+
+- **All reps exceed quota**
+  Quotas were calibrated after generation to produce realistic
+  attainment variance (69-123%) but all reps remain above quota.
+  A real dataset would show more distribution above and below.
+
+- **Save rates not validated**
+  Pipeline Health Score weights (40/35/25) are based on
+  industry reasoning not empirical optimisation.
+  A production version would derive weights from historical
+  correlation between each metric and actual quota attainment.
 
 ---
 
@@ -109,18 +129,18 @@ Required coverage = 1 / close_rate
 sales-pipeline-analytics/
 │
 ├── scripts/
-│   ├── generate_data.py     ← synthetic CRM data generator
-│   ├── load_database.py     ← DuckDB loader
-│   ├── run_queries.py       ← SQL query runner
-│   └── startup.py           ← auto-generates data on deployment
+│   ├── generate_data.py      ← synthetic CRM data generator
+│   ├── load_database.py      ← DuckDB loader
+│   ├── run_queries.py        ← SQL query runner
+│   └── startup.py            ← auto-generates data on deployment
 │
 ├── sql/
-│   └── 01_exploration.sql   ← 10 business queries
+│   └── 01_exploration.sql    ← 10 business queries
 │
 ├── dashboard/
-│   └── app.py               ← Streamlit dashboard
+│   └── app.py                ← Streamlit dashboard
 │
-├── data/                    ← gitignored — generated locally
+├── data/                     ← gitignored — generated locally
 └── requirements.txt
 ```
 
