@@ -20,6 +20,18 @@ st.set_page_config(
     layout="wide"
 )
 
+import os
+
+# Absolute path — works both locally and on Streamlit Cloud
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR  = os.path.join(BASE_DIR, 'data')
+DB_PATH   = os.path.join(DATA_DIR, 'pipeline.duckdb')
+
+# Generate data if database doesn't exist
+import sys
+sys.path.append(os.path.join(BASE_DIR, 'scripts'))
+import startup
+
 # ============================================
 # Global font size
 # ============================================
@@ -32,7 +44,7 @@ FONT_SIZE = 14
 
 @st.cache_resource
 def get_connection():
-    return duckdb.connect('data/pipeline.duckdb')
+    return duckdb.connect(DB_PATH)
 
 conn = get_connection()
 

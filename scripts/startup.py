@@ -12,7 +12,7 @@ from faker import Faker
 import random
 from datetime import datetime, timedelta
 
-def generate_and_load():
+def generate_and_load(data_dir='data'):
     """Generate synthetic data and load into DuckDB"""
 
     print("Generating synthetic data...")
@@ -151,5 +151,5 @@ def generate_and_load():
 # Run on import if database doesn't exist
 # ============================================
 
-if not os.path.exists('data/pipeline.duckdb'):
-    generate_and_load()
+if not os.path.exists(DB_PATH):
+    generate_and_load(DATA_DIR)
