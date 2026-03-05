@@ -32,14 +32,14 @@ START_DATE = datetime(2023, 1, 1)
 END_DATE   = datetime(2024, 12, 31)
 
 REPS = [
-    {'name': 'Sarah Chen',    'region': 'APAC',   'quota': 800000},
-    {'name': 'Marcus Webb',   'region': 'APAC',   'quota': 750000},
-    {'name': 'Priya Sharma',  'region': 'EMEA',   'quota': 900000},
-    {'name': 'James Okafor',  'region': 'EMEA',   'quota': 850000},
-    {'name': 'Lisa Park',     'region': 'AMER',   'quota': 1000000},
-    {'name': 'Tom Reilly',    'region': 'AMER',   'quota': 950000},
-    {'name': 'Ana Souza',     'region': 'LATAM',  'quota': 600000},
-    {'name': 'David Kim',     'region': 'LATAM',  'quota': 650000},
+    {'name': 'Sarah Chen',    'region': 'APAC',   'quota': 6000000},
+    {'name': 'Marcus Webb',   'region': 'APAC',   'quota': 6500000},
+    {'name': 'Priya Sharma',  'region': 'EMEA',   'quota': 7000000},
+    {'name': 'James Okafor',  'region': 'EMEA',   'quota': 7500000},
+    {'name': 'Lisa Park',     'region': 'AMER',   'quota': 8000000},
+    {'name': 'Tom Reilly',    'region': 'AMER',   'quota': 9000000},
+    {'name': 'Ana Souza',     'region': 'LATAM',  'quota': 5000000},
+    {'name': 'David Kim',     'region': 'LATAM',  'quota': 6000000},
 ]
 
 STAGES = [
