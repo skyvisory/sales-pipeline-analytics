@@ -128,7 +128,9 @@ def generate_and_load(data_dir='data', db_path=None):
 
     conn = duckdb.connect(db_path)
     conn.execute("DROP TABLE IF EXISTS opportunities")
-    conn.execute("CREATE TABLE opportunities AS SELECT * FROM df")
+    conn.register('df_temp', df)
+    conn.execute("CREATE TABLE opportunities AS SELECT * FROM df_temp")
+    conn.unregister('df_temp')
     conn.execute("""
         CREATE OR REPLACE VIEW closed_deals AS
         SELECT * FROM opportunities
