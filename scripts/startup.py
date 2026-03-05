@@ -1,23 +1,21 @@
 # ============================================
 # startup.py
-# Purpose: Generate and load data if database doesn't exist — runs on app startup
+# Purpose: Generate synthetic CRM data
+#          and save to CSV
+#          DuckDB loaded in-memory in app.py
 # ============================================
 
 import os
-import duckdb
 import pandas as pd
 import numpy as np
 from faker import Faker
 import random
 from datetime import datetime, timedelta
 
-def generate_and_load(data_dir='data', db_path=None):
-    """Generate synthetic data and load into DuckDB"""
+def generate_csv(data_dir='data'):
+    """Generate synthetic CRM data and save to CSV"""
 
-    if db_path is None:
-        db_path = os.path.join(data_dir, 'pipeline.duckdb')
-
-    print(f"Generating synthetic data to {db_path}...")
+    print(f"Generating synthetic data to {data_dir}...")
 
     fake = Faker()
     Faker.seed(42)
@@ -121,33 +119,10 @@ def generate_and_load(data_dir='data', db_path=None):
         })
 
     df = pd.DataFrame(opportunities)
-
-    # Use passed data_dir and db_path — not hardcoded
     os.makedirs(data_dir, exist_ok=True)
     df.to_csv(os.path.join(data_dir, 'opportunities.csv'), index=False)
-
-    conn = duckdb.connect(db_path)
-    conn.execute("DROP TABLE IF EXISTS opportunities")
-    conn.register('df_temp', df)
-    conn.execute("CREATE TABLE opportunities AS SELECT * FROM df_temp")
-    conn.unregister('df_temp')
-    conn.execute("""
-        CREATE OR REPLACE VIEW closed_deals AS
-        SELECT * FROM opportunities
-        WHERE stage IN ('Closed Won', 'Closed Lost')
-    """)
-    conn.execute("""
-        CREATE OR REPLACE VIEW active_pipeline AS
-        SELECT * FROM opportunities
-        WHERE stage NOT IN ('Closed Won', 'Closed Lost')
-    """)
-    conn.execute("""
-        CREATE OR REPLACE VIEW won_deals AS
-        SELECT * FROM opportunities
-        WHERE stage = 'Closed Won'
-    """)
-    conn.close()
-    print(f"Data generated and loaded to {db_path}")
+    print(f"Generated {len(df):,} opportunities → {data_dir}/opportunities.csv")
+    return df
 
 if __name__ == '__main__':
-    generate_and_load()
+    generate_csv()

@@ -9,6 +9,9 @@ import duckdb
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import os
+import sys
+import tempfile
 
 # ============================================
 # Page config
@@ -20,6 +23,32 @@ st.set_page_config(
     layout="wide"
 )
 
+# ============================================
+# Paths
+# ============================================
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+IS_CLOUD = os.path.exists('/mount/src')
+DATA_DIR = tempfile.gettempdir() if IS_CLOUD else os.path.join(BASE_DIR, 'data')
+CSV_PATH = os.path.join(DATA_DIR, 'opportunities.csv')
+
+# ============================================
+# Generate data if needed
+# ============================================
+
+sys.path.append(os.path.join(BASE_DIR, 'scripts'))
+from startup import generate_csv
+
+if not os.path.exists(CSV_PATH):
+    generate_csv(DATA_DIR)
+
+# ============================================
+# In-memory DuckDB — works on cloud and local
+# ============================================
+
+df_raw = pd.read_csv(CSV_PATH)
+conn   = duckdb.connect()
+conn.register('opportunities', df_raw)
 
 # ============================================
 # Global font size
@@ -34,26 +63,24 @@ FONT_SIZE = 14
 import os
 import sys
 import tempfile
+import pandas as pd
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = tempfile.gettempdir() if os.path.exists('/mount/src') else os.path.join(BASE_DIR, 'data')
-DB_PATH  = os.path.join(DATA_DIR, 'pipeline.duckdb')
+BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+IS_CLOUD  = os.path.exists('/mount/src')
+DATA_DIR  = tempfile.gettempdir() if IS_CLOUD else os.path.join(BASE_DIR, 'data')
+CSV_PATH  = os.path.join(DATA_DIR, 'opportunities.csv')
 
 sys.path.append(os.path.join(BASE_DIR, 'scripts'))
-from startup import generate_and_load
+from startup import generate_csv
 
-if not os.path.exists(DB_PATH):
-    generate_and_load(DATA_DIR, DB_PATH)
+if not os.path.exists(CSV_PATH):
+    generate_csv(DATA_DIR)
 
-# Debug — remove after fixing
-import streamlit as st
-st.write(f"DB_PATH: {DB_PATH}")
-st.write(f"DB exists: {os.path.exists(DB_PATH)}")
-test_conn = duckdb.connect(DB_PATH)
-st.write(f"Tables: {test_conn.execute('SHOW TABLES').fetchdf()}")
-test_conn.close()
-
-conn = duckdb.connect(DB_PATH)
+# Load CSV into memory — no DuckDB needed on cloud
+import duckdb
+conn = duckdb.connect()  # in-memory database
+df_raw = pd.read_csv(CSV_PATH)
+conn.register('opportunities', df_raw)
 
 # ============================================
 # Data loading
