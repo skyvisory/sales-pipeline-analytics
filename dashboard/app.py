@@ -45,6 +45,14 @@ from startup import generate_and_load
 if not os.path.exists(DB_PATH):
     generate_and_load(DATA_DIR, DB_PATH)
 
+# Debug — remove after fixing
+import streamlit as st
+st.write(f"DB_PATH: {DB_PATH}")
+st.write(f"DB exists: {os.path.exists(DB_PATH)}")
+test_conn = duckdb.connect(DB_PATH)
+st.write(f"Tables: {test_conn.execute('SHOW TABLES').fetchdf()}")
+test_conn.close()
+
 conn = duckdb.connect(DB_PATH)
 
 # ============================================
