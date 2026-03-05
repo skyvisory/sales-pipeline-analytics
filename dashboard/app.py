@@ -21,16 +21,22 @@ st.set_page_config(
 )
 
 import os
+import tempfile
 
-# Absolute path — works both locally and on Streamlit Cloud
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR  = os.path.join(BASE_DIR, 'data')
+# On Streamlit Cloud /mount/src is read-only
+# Use temp directory for generated files
+IS_CLOUD  = os.path.exists('/mount/src')
+BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR  = tempfile.gettempdir() if IS_CLOUD else os.path.join(BASE_DIR, 'data')
 DB_PATH   = os.path.join(DATA_DIR, 'pipeline.duckdb')
 
 # Generate data if database doesn't exist
 import sys
 sys.path.append(os.path.join(BASE_DIR, 'scripts'))
-import startup
+from startup import generate_and_load
+
+if not os.path.exists(DB_PATH):
+    generate_and_load(DATA_DIR)
 
 # ============================================
 # Global font size
