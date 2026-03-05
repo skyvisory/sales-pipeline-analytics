@@ -151,5 +151,5 @@ def generate_and_load(data_dir='data'):
 # Run on import if database doesn't exist
 # ============================================
 
-if not os.path.exists(DB_PATH):
-    generate_and_load(DATA_DIR)
+if __name__ == '__main__':
+    generate_and_load()
