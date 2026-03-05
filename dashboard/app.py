@@ -36,7 +36,7 @@ sys.path.append(os.path.join(BASE_DIR, 'scripts'))
 from startup import generate_and_load
 
 if not os.path.exists(DB_PATH):
-    generate_and_load(DATA_DIR)
+    generate_and_load(DATA_DIR, DB_PATH)
 
 # ============================================
 # Global font size

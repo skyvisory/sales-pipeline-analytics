@@ -1,7 +1,6 @@
 # ============================================
 # startup.py
-# Purpose: Generate and load data if database
-#          doesn't exist — runs on app startup
+# Purpose: Generate and load data if database doesn't exist — runs on app startup
 # ============================================
 
 import os
@@ -12,10 +11,13 @@ from faker import Faker
 import random
 from datetime import datetime, timedelta
 
-def generate_and_load(data_dir='data'):
+def generate_and_load(data_dir='data', db_path=None):
     """Generate synthetic data and load into DuckDB"""
 
-    print("Generating synthetic data...")
+    if db_path is None:
+        db_path = os.path.join(data_dir, 'pipeline.duckdb')
+
+    print(f"Generating synthetic data to {db_path}...")
 
     fake = Faker()
     Faker.seed(42)
@@ -77,12 +79,12 @@ def generate_and_load(data_dir='data'):
     def determine_stage(acv):
         win_prob = 0.20 if acv > 200000 else 0.25 if acv > 50000 else 0.32
         rand = random.random()
-        if rand < win_prob:                    return 'Closed Won'
-        elif rand < win_prob + 0.40:           return 'Closed Lost'
-        elif rand < win_prob + 0.55:           return 'Negotiation'
-        elif rand < win_prob + 0.70:           return 'Proposal'
-        elif rand < win_prob + 0.82:           return 'Qualified'
-        else:                                  return 'Prospecting'
+        if rand < win_prob:              return 'Closed Won'
+        elif rand < win_prob + 0.40:     return 'Closed Lost'
+        elif rand < win_prob + 0.55:     return 'Negotiation'
+        elif rand < win_prob + 0.70:     return 'Proposal'
+        elif rand < win_prob + 0.82:     return 'Qualified'
+        else:                            return 'Prospecting'
 
     def calc_days(stage):
         total = 0
@@ -120,14 +122,13 @@ def generate_and_load(data_dir='data'):
 
     df = pd.DataFrame(opportunities)
 
-    os.makedirs('data', exist_ok=True)
-    df.to_csv('data/opportunities.csv', index=False)
+    # Use passed data_dir and db_path — not hardcoded
+    os.makedirs(data_dir, exist_ok=True)
+    df.to_csv(os.path.join(data_dir, 'opportunities.csv'), index=False)
 
-    # Load into DuckDB
-    conn = duckdb.connect('data/pipeline.duckdb')
+    conn = duckdb.connect(db_path)
     conn.execute("DROP TABLE IF EXISTS opportunities")
     conn.execute("CREATE TABLE opportunities AS SELECT * FROM df")
-
     conn.execute("""
         CREATE OR REPLACE VIEW closed_deals AS
         SELECT * FROM opportunities
@@ -143,13 +144,8 @@ def generate_and_load(data_dir='data'):
         SELECT * FROM opportunities
         WHERE stage = 'Closed Won'
     """)
-
     conn.close()
-    print("Data generated and loaded successfully")
-
-# ============================================
-# Run on import if database doesn't exist
-# ============================================
+    print(f"Data generated and loaded to {db_path}")
 
 if __name__ == '__main__':
     generate_and_load()
