@@ -96,6 +96,21 @@ Required coverage = 1 / close_rate
   A rep with 3x coverage but 20% win rate is in worse shape
   than one with 2x coverage and 45% win rate.
 
+## KPIs to Track in Production
+
+| Cadence | Metric | Target |
+|---|---|---|
+| Weekly | Pipeline coverage ratio by rep | Flag if below required coverage (1 / close_rate) |
+| Weekly | New opportunities created | Flag if top-of-funnel drops >20% week-on-week |
+| Weekly | Pipeline Health Score by rep | Flag any rep dropping to At Risk (<60) |
+| Monthly | Win rate by segment | SMB target >47%, Enterprise target >33% |
+| Monthly | Average cycle time by stage | Flag if Negotiation exceeds 85-day baseline |
+| Monthly | Quota attainment by rep | Flag if below 70% — coaching trigger |
+| Monthly | Lead source win rate | Outbound target >45%, Referral target >39% |
+| Quarterly | Pipeline coverage trend | Is coverage improving or declining overall? |
+| Quarterly | Win rate vs discount rate | Flag if win rate rises only when discounting increases |
+| Quarterly | Health Score distribution | Target: >80% of reps in Healthy or Strong band |
+
 ## Known Limitations
 
 - **Pipeline funnel does not reflect sequential conversion**
